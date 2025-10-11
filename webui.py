@@ -198,6 +198,7 @@ def get_ref_wav(project_name: str, character: str):
 
 PROJECTS = get_projects()
 ACTORS = get_characters(PROJECTS[0]) if PROJECTS else []
+init_audio = get_ref_wav(PROJECTS[0], ACTORS[0]) if PROJECTS and ACTORS else None
 
 with gr.Blocks(title="IndexTTS Demo") as demo:
     mutex = threading.Lock()
@@ -218,7 +219,7 @@ with gr.Blocks(title="IndexTTS Demo") as demo:
 
         with gr.Row():
             os.makedirs("prompts",exist_ok=True)
-            prompt_audio = gr.Audio(label=i18n("音色参考音频"),key="prompt_audio",
+            prompt_audio = gr.Audio(value=init_audio, label=i18n("音色参考音频"),key="prompt_audio",
                                     sources=["upload","microphone"],type="filepath")
             prompt_list = os.listdir("prompts")
             default = ''
