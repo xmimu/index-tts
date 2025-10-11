@@ -4,6 +4,8 @@ import os
 import sys
 import threading
 import time
+import glob
+import random
 
 import warnings
 
@@ -172,6 +174,31 @@ def create_warning_message(warning_text):
 def create_experimental_warning_message():
     return create_warning_message(i18n('提示：此功能为实验版，结果尚不稳定，我们正在持续优化中。'))
 
+def get_projects():
+    ls = []
+    for i in glob.glob('examples/*'):
+        if os.path.isdir(i):
+            ls.append(os.path.basename(i))
+    return ls
+
+def get_characters(project_name: str):
+    if not project_name: return []
+    proj_path = f'examples/{project_name}'
+    if os.path.isdir(proj_path):
+        return list(os.listdir(proj_path))
+    return []
+
+def get_ref_wav(project_name: str, character: str):
+    if not project_name or not character: return None
+    wav_folder = f'examples/{project_name}/{character}'
+    if os.path.isdir(wav_folder):
+        wav_list = os.listdir(wav_folder)
+        return os.path.join(wav_folder, random.choice(wav_list)) if wav_list else None
+    return None
+
+PROJECTS = get_projects()
+ACTORS = get_characters(PROJECTS[0]) if PROJECTS else []
+
 with gr.Blocks(title="IndexTTS Demo") as demo:
     mutex = threading.Lock()
     gr.HTML('''
@@ -182,6 +209,13 @@ with gr.Blocks(title="IndexTTS Demo") as demo:
     ''')
 
     with gr.Tab(i18n("音频生成")):
+
+        # 角色语音选择
+        with gr.Row():
+            comb_proj = gr.Dropdown(choices=PROJECTS, value=PROJECTS[0] if PROJECTS else '', label='项目选择')
+            comb_character = gr.Dropdown(choices=ACTORS, value=ACTORS[0] if ACTORS else '', label='角色选择')
+            sel_wav_btn = gr.Button('随机选择参考音频')
+
         with gr.Row():
             os.makedirs("prompts",exist_ok=True)
             prompt_audio = gr.Audio(label=i18n("音色参考音频"),key="prompt_audio",
@@ -435,6 +469,32 @@ with gr.Blocks(title="IndexTTS Demo") as demo:
                      ],
                      outputs=[output_audio])
 
+    def on_comb_proj_change(current_project: str):
+        actors = get_characters(current_project)
+        if not actors:
+            return gr.update(choices=[], value=None)
+        return gr.update(choices=actors, value=actors[0])
+
+    def on_comb_character_change(current_character: str):
+        print('选择角色')
+
+
+    def on_sel_wav_btn_click(project_name: str, character: str):
+        wav_file = get_ref_wav(project_name, character)
+        if not wav_file:
+            return gr.update(value=None)
+        return gr.update(value=wav_file)
+
+
+    comb_proj.change(on_comb_proj_change,
+                     inputs=[comb_proj],
+                     outputs=[comb_character])
+    comb_character.change(on_comb_character_change,
+                          inputs=[comb_character],
+                          outputs=[])
+    sel_wav_btn.click(on_sel_wav_btn_click,
+                      inputs=[comb_proj, comb_character],
+                      outputs=[prompt_audio])
 
 
 if __name__ == "__main__":
