@@ -219,7 +219,7 @@ with gr.Blocks(title="IndexTTS Demo") as demo:
 
         with gr.Row():
             os.makedirs("prompts",exist_ok=True)
-            prompt_audio = gr.Audio(value=init_audio, label=i18n("音色参考音频"),key="prompt_audio",
+            prompt_audio = gr.Audio(value=init_audio, label=i18n(f"音色参考音频({init_audio})"),key="prompt_audio",
                                     sources=["upload","microphone"],type="filepath")
             prompt_list = os.listdir("prompts")
             default = ''
@@ -341,7 +341,7 @@ with gr.Blocks(title="IndexTTS Demo") as demo:
     def on_example_click(example):
         print(f"Example clicked: ({len(example)} values) = {example!r}")
         return (
-            gr.update(value=example[0]),
+            gr.update(value=example[0], label=f'音色参考音频({example[0]})'),
             gr.update(value=example[1]),
             gr.update(value=example[2]),
             gr.update(value=example[3]),
@@ -479,15 +479,15 @@ with gr.Blocks(title="IndexTTS Demo") as demo:
     def on_comb_character_change(project_name: str, character: str):
         wav_file = get_ref_wav(project_name, character)
         if not wav_file:
-            return gr.update(value=None)
-        return gr.update(value=wav_file)
+            return gr.update(value=None, label='音色参考音频')
+        return gr.update(value=wav_file, label=f'音色参考音频({wav_file})')
 
 
     def on_sel_wav_btn_click(project_name: str, character: str):
         wav_file = get_ref_wav(project_name, character)
         if not wav_file:
-            return gr.update(value=None)
-        return gr.update(value=wav_file)
+            return gr.update(value=None, label='音色参考音频')
+        return gr.update(value=wav_file, label=f'音色参考音频({wav_file})')
 
 
     comb_proj.change(on_comb_proj_change,
