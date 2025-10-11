@@ -475,8 +475,11 @@ with gr.Blocks(title="IndexTTS Demo") as demo:
             return gr.update(choices=[], value=None)
         return gr.update(choices=actors, value=actors[0])
 
-    def on_comb_character_change(current_character: str):
-        print('选择角色')
+    def on_comb_character_change(project_name: str, character: str):
+        wav_file = get_ref_wav(project_name, character)
+        if not wav_file:
+            return gr.update(value=None)
+        return gr.update(value=wav_file)
 
 
     def on_sel_wav_btn_click(project_name: str, character: str):
@@ -490,8 +493,8 @@ with gr.Blocks(title="IndexTTS Demo") as demo:
                      inputs=[comb_proj],
                      outputs=[comb_character])
     comb_character.change(on_comb_character_change,
-                          inputs=[comb_character],
-                          outputs=[])
+                          inputs=[comb_proj, comb_character],
+                          outputs=[prompt_audio])
     sel_wav_btn.click(on_sel_wav_btn_click,
                       inputs=[comb_proj, comb_character],
                       outputs=[prompt_audio])
