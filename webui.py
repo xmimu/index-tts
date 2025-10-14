@@ -204,7 +204,7 @@ def get_ref_examples(project_name: str, character:str):
     for filepath in wav_files:
         ref_examples.append([filepath,
                              EMO_CHOICES_ALL[0],
-                             # '',
+                             None,
                              None,
                              1.0,
                              '',
@@ -356,7 +356,7 @@ with gr.Blocks(title="IndexTTS Demo") as demo:
             # such as `emo_control_method_all` (to be able to see EXPERIMENTAL text labels)!
             components=[prompt_audio,
                         emo_control_method_all,  # important: support all mode labels!
-                        # input_text_single,
+                        input_text_single,
                         emo_upload,
                         emo_weight,
                         emo_text,
@@ -368,7 +368,7 @@ with gr.Blocks(title="IndexTTS Demo") as demo:
         return (
             gr.update(value=example[0], label=f'音色参考音频({example[0]})'),
             gr.update(value=example[1]),
-            gr.update(value=example[2]),
+            # gr.update(value=example[2]),
             gr.update(value=example[3]),
             gr.update(value=example[4]),
             gr.update(value=example[5]),
@@ -387,7 +387,7 @@ with gr.Blocks(title="IndexTTS Demo") as demo:
                         inputs=[example_table],
                         outputs=[prompt_audio,
                                  emo_control_method,
-                                 input_text_single,
+                                 # input_text_single,
                                  emo_upload,
                                  emo_weight,
                                  emo_text,
