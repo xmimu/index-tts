@@ -166,9 +166,9 @@ wheels = [
 name = "audioread"
 version = "3.0.1"
 source = { registry = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple" }
-sdist = { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/db/d2/87016ca9f083acadffb2d8da59bfa3253e4da7eeb9f71fb8e7708dc97ecd/audioread-3.0.1.tar.gz", hash = "sha256:ac5460a5498c48bdf2e8e767402583a4dcd13f4414d286f42ce4379e8b35066d" }
+sdist = { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/db/d2/87016ca9f083acadffb2d8da59bfa3253e4da7eeb9f71fb8e7708dc97ecd/audioread-3.0.1.tar.gz", hash = "sha256:ac5460a5498c48bdf2e8e767402583a4dcd13f4414d286f42ce4379e8b35066d", size = 116513, upload-time = "2023-09-27T19:27:53.084Z" }
 wheels = [
-    { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/57/8d/30aa32745af16af0a9a650115fbe81bde7c610ed5c21b381fca0196f3a7f/audioread-3.0.1-py3-none-any.whl", hash = "sha256:4cdce70b8adc0da0a3c9e0d85fb10b3ace30fbdf8d1670fd443929b61d117c33" },
+    { url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/57/8d/30aa32745af16af0a9a650115fbe81bde7c610ed5c21b381fca0196f3a7f/audioread-3.0.1-py3-none-any.whl", hash = "sha256:4cdce70b8adc0da0a3c9e0d85fb10b3ace30fbdf8d1670fd443929b61d117c33", size = 23492, upload-time = "2023-09-27T19:27:51.334Z" },
 ]
 
 [[package]]
@@ -1179,6 +1179,7 @@ dependencies = [
     { name = "matplotlib" },
     { name = "modelscope" },
     { name = "munch" },
+    { name = "ninja" },
     { name = "numba" },
     { name = "numpy" },
     { name = "omegaconf" },
@@ -1226,6 +1227,7 @@ requires-dist = [
     { name = "matplotlib", specifier = "==3.8.2" },
     { name = "modelscope", specifier = "==1.27.0" },
     { name = "munch", specifier = "==4.0.0" },
+    { name = "ninja", specifier = ">=1.13.0" },
     { name = "numba", specifier = "==0.58.1" },
     { name = "numpy", specifier = "==1.26.2" },
     { name = "omegaconf", specifier = ">=2.3.0" },

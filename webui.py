@@ -196,10 +196,34 @@ def get_ref_wav(project_name: str, character: str):
     if not wav_list: return []
     return [os.path.join(wav_folder, filename) for filename in wav_list]
 
+def get_ref_examples(project_name: str, character:str):
+    wav_files = get_ref_wav(project_name, character)
+    if not wav_files:
+        return []
+    ref_examples = []
+    for filepath in wav_files:
+        ref_examples.append([filepath,
+                             EMO_CHOICES_ALL[0],
+                             # '',
+                             None,
+                             1.0,
+                             '',
+                             0,
+                             0,
+                             0,
+                             0,
+                             0,
+                             0,
+                             0,
+                             0,
+                             ])
+    return ref_examples
+
 PROJECTS = get_projects()
 ACTORS = get_characters(PROJECTS[0]) if PROJECTS else []
 ref_files = get_ref_wav(PROJECTS[0], ACTORS[0]) if PROJECTS and ACTORS else None
 init_audio = ref_files[0] if ref_files else None
+init_ref_examples = get_ref_examples(PROJECTS[0], ACTORS[0]) if ref_files else []
 
 with gr.Blocks(title="IndexTTS Demo") as demo:
     mutex = threading.Lock()
@@ -325,14 +349,14 @@ with gr.Blocks(title="IndexTTS Demo") as demo:
         # such as the list of available choices in emo_control_method.
         example_table = gr.Dataset(label="Examples",
             samples_per_page=20,
-            samples=get_example_cases(include_experimental=False),
+            samples=init_ref_examples,
             type="values",
             # these components are NOT "connected". it just reads the column labels/available
             # states from them, so we MUST link to the "all options" versions of all components,
             # such as `emo_control_method_all` (to be able to see EXPERIMENTAL text labels)!
             components=[prompt_audio,
                         emo_control_method_all,  # important: support all mode labels!
-                        input_text_single,
+                        # input_text_single,
                         emo_upload,
                         emo_weight,
                         emo_text,
@@ -478,27 +502,11 @@ with gr.Blocks(title="IndexTTS Demo") as demo:
         return gr.update(choices=actors, value=actors[0])
 
     def on_comb_character_change(project_name: str, character: str):
-        wav_files = get_ref_wav(project_name, character)
-        if not wav_files:
+        ref_examples = get_ref_examples(project_name, character)
+        if not ref_examples:
             return gr.update(value=None, label='音色参考音频'), gr.update(samples=[])
-        ref_examples = []
-        for filepath in wav_files:
-            ref_examples.append([filepath,
-                                 EMO_CHOICES_ALL[0],
-                                 '',
-                                 None,
-                                 1.0,
-                                 '',
-                                 0,
-                                 0,
-                                 0,
-                                 0,
-                                 0,
-                                 0,
-                                 0,
-                                 0,
-                                 ])
-        return gr.update(value=wav_files[0], label=f'音色参考音频({wav_files[0]})'), gr.update(samples=ref_examples)
+        first_audio = ref_examples[0][0]
+        return gr.update(value=first_audio, label=f'音色参考音频({first_audio})'), gr.update(samples=ref_examples)
 
 
     def on_random_wav_btn_click(project_name: str, character: str):
