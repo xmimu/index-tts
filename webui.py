@@ -220,7 +220,7 @@ with gr.Blocks(title="IndexTTS Demo") as demo:
 
         with gr.Row():
             os.makedirs("prompts",exist_ok=True)
-            prompt_audio = gr.Audio(value=init_audio, label=i18n(f"音色参考音频({init_audio})"),key="prompt_audio",
+            prompt_audio = gr.Audio(value=init_audio, label=i18n(f"音色参考音频"),key="prompt_audio",
                                     sources=["upload","microphone"],type="filepath")
             prompt_list = os.listdir("prompts")
             default = ''
@@ -481,7 +481,6 @@ with gr.Blocks(title="IndexTTS Demo") as demo:
         wav_files = get_ref_wav(project_name, character)
         if not wav_files:
             return gr.update(value=None, label='音色参考音频'), gr.update(samples=[])
-        # return gr.update(value=wav_file, label=f'音色参考音频({wav_file})')
         ref_examples = []
         for filepath in wav_files:
             ref_examples.append([filepath,
@@ -519,6 +518,9 @@ with gr.Blocks(title="IndexTTS Demo") as demo:
     sel_wav_btn.click(on_random_wav_btn_click,
                       inputs=[comb_proj, comb_character],
                       outputs=[prompt_audio])
+
+    # 不显示 使用实验性功能
+    experimental_checkbox.visible = False
 
 
 if __name__ == "__main__":
