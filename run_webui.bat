@@ -1,1 +1,1 @@
-uv run .\webui.py --fp16 --cuda_kernel
+uv run .\webui.py
