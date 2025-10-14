@@ -189,16 +189,17 @@ def get_characters(project_name: str):
     return []
 
 def get_ref_wav(project_name: str, character: str):
-    if not project_name or not character: return None
+    if not project_name or not character: return []
     wav_folder = f'examples/{project_name}/{character}'
-    if os.path.isdir(wav_folder):
-        wav_list = os.listdir(wav_folder)
-        return os.path.join(wav_folder, random.choice(wav_list)) if wav_list else None
-    return None
+    if not os.path.isdir(wav_folder): return []
+    wav_list = os.listdir(wav_folder)
+    if not wav_list: return []
+    return [os.path.join(wav_folder, filename) for filename in wav_list]
 
 PROJECTS = get_projects()
 ACTORS = get_characters(PROJECTS[0]) if PROJECTS else []
-init_audio = get_ref_wav(PROJECTS[0], ACTORS[0]) if PROJECTS and ACTORS else None
+ref_files = get_ref_wav(PROJECTS[0], ACTORS[0]) if PROJECTS and ACTORS else None
+init_audio = ref_files[0] if ref_files else None
 
 with gr.Blocks(title="IndexTTS Demo") as demo:
     mutex = threading.Lock()
@@ -477,16 +478,35 @@ with gr.Blocks(title="IndexTTS Demo") as demo:
         return gr.update(choices=actors, value=actors[0])
 
     def on_comb_character_change(project_name: str, character: str):
-        wav_file = get_ref_wav(project_name, character)
-        if not wav_file:
-            return gr.update(value=None, label='音色参考音频')
-        return gr.update(value=wav_file, label=f'音色参考音频({wav_file})')
+        wav_files = get_ref_wav(project_name, character)
+        if not wav_files:
+            return gr.update(value=None, label='音色参考音频'), gr.update(samples=[])
+        # return gr.update(value=wav_file, label=f'音色参考音频({wav_file})')
+        ref_examples = []
+        for filepath in wav_files:
+            ref_examples.append([filepath,
+                                 EMO_CHOICES_ALL[0],
+                                 '',
+                                 None,
+                                 1.0,
+                                 '',
+                                 0,
+                                 0,
+                                 0,
+                                 0,
+                                 0,
+                                 0,
+                                 0,
+                                 0,
+                                 ])
+        return gr.update(value=wav_files[0], label=f'音色参考音频({wav_files[0]})'), gr.update(samples=ref_examples)
 
 
-    def on_sel_wav_btn_click(project_name: str, character: str):
-        wav_file = get_ref_wav(project_name, character)
-        if not wav_file:
-            return gr.update(value=None, label='音色参考音频')
+    def on_random_wav_btn_click(project_name: str, character: str):
+        wav_files = get_ref_wav(project_name, character)
+        if not wav_files:
+            return gr.update(value=None, label='音色参考音频'), []
+        wav_file = random.choice(wav_files)
         return gr.update(value=wav_file, label=f'音色参考音频({wav_file})')
 
 
@@ -495,8 +515,8 @@ with gr.Blocks(title="IndexTTS Demo") as demo:
                      outputs=[comb_character])
     comb_character.change(on_comb_character_change,
                           inputs=[comb_proj, comb_character],
-                          outputs=[prompt_audio])
-    sel_wav_btn.click(on_sel_wav_btn_click,
+                          outputs=[prompt_audio, example_table])
+    sel_wav_btn.click(on_random_wav_btn_click,
                       inputs=[comb_proj, comb_character],
                       outputs=[prompt_audio])
 
