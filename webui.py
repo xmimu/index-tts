@@ -117,6 +117,8 @@ def gen_single(emo_control_method,prompt, text,
                emo_text,emo_random,
                max_text_tokens_per_segment=120,
                 *args, progress=gr.Progress()):
+    # 打印时间戳
+    print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Generating audio for text: {text}")
     output_path = None
     if not output_path:
         output_path = os.path.join("outputs", f"spk_{int(time.time())}.wav")
